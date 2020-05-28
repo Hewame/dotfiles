@@ -51,7 +51,6 @@ from typing import List  # noqa: F401
 
 mod = "mod4"
 
-
 ##### Define Groups #####
 groups = [
     Group("WEB", layout='monadtall',),
@@ -67,59 +66,42 @@ groups = [
 from libqtile.dgroups import simple_key_binder
 dgroups_key_binder = simple_key_binder(mod)
 
-
 ##### GLOBAL COLORS, Yes ColorZ! #####
 colorz = ("#00172D", #[0] Maastricht Dark-Blue : Panle BG
           "#2ABB9B", #[1] TURQUOISE Green : Border Line >> Active Tab >> Group
           "#FFA400", #[2] BRIGHT GOLDEN Yellow : Inactive Group Names
           "#F22613", #[3] POMEGRANATE Red : Active Group Names
           "#19B5FE", #[4] DODGER BLUE : Selected Group
-          "#5A13F2", #[5] PURPLE : Focused Window Border, W-Clock          
-          "#AB05F2", #[6] BRIGHT PURPLE:  Normal Window Border, W-NIC 
-          "#2745F2", #[7] BLUE : Widget : Keyboard Layout
-          "#C004D9", #[8] DARK PINK : Widget : Volume         
+          "#5A13F2", #[5] PURPLE : Focused Window Border          
+          "#006400", #[6] DARK-GREEN :  Normal Window Border      
           )
 
-
 ##### Custom Layout Settings #####
-layout_mtall = {
+layout_monad = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
-    "border_width": 4,
-    "margin": 2,
-    "ratio": 0.6,
-    "single_border_width" : 3,
-    "single_margin" : 2,
-                }
-
-layout_mwide = {
-    "border_focus": colorz[5],
-    "border_normal": colorz[6],
-    "border_width": 4,
-    "margin": 2,
-    "single_border_width" : 3,
-    "single_margin" : 2,
+    "border_width": 2,
+    "margin": 6,
+    "single_border_width" : 2,
+    "single_margin" : 6,
                 }
 
 layout_flo = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
-    "border_width": 4,
-    "fullscreen_border_width": 4,
+    "border_width": 2,
+    "fullscreen_border_width": 2,
     }
     
 ##### Layouts #####
 layouts = [
-    layout.MonadTall(**layout_mtall),
-    layout.MonadWide(**layout_mwide),
+    layout.MonadTall(**layout_monad,ratio= 0.6),
+    layout.MonadWide(**layout_monad),
     layout.Max(),                        
     layout.Floating(**layout_flo),
-
     ]
 
-
 ##### Key Bindings #####
-
 keys = [
     Key(
         [mod], "Return",
@@ -244,15 +226,16 @@ keys = [
         desc="Toogle Fullscreen"    
     ),
 
-
+    Key(
+        [mod], "p",
+        lazy.spawn("dmenu_run -i -bw 3"),
+        desc="Dmenu"
+    ),
 ]
-
-
 
 ##### Random Global Variables #####
 # Custom Icon Paths for CurrentLayoutIcon Widget
 wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
-
 
 ##### Custom Widget Settings ######
 widget_defaults = dict(
@@ -263,24 +246,15 @@ widget_defaults = dict(
 )
 extension_defaults = widget_defaults.copy()
 
-
 ##### Theme Settings for Widgets #####
 # Widget Seperator
 w_sep = {
     "background": colorz[0],
     "foreground": colorz[2],
-    "linewidth":9,
-    "size_percent":70,
+    "linewidth":8,
+    "size_percent":60,
     }
-# Full Size Widget Seperator
-f_w_sep = {
-    "background": colorz[0],
-    "foreground": colorz[0],
-    "linewidth":2,
-    "size_percent":100,
-    }
-
-        
+       
 # Widget GroupBox, This is not AGroupBox
 w_gbox = {
     "active": colorz[3],
@@ -291,45 +265,38 @@ w_gbox = {
     "this_screen_border": colorz[2],
     }    
 
-
 # Launcher
 w_prompt = {
     "cursor_color": colorz[3],
     "padding": 5,
     "prompt": "Start:   ",
     }
-    
 
 # NIC : Network Interfaces    
 w_net = {
-    "background": colorz[6],
     "format": "{down} ↓↑ {up}",
     "interface": "wlx7cdd90399231",
     }
 
 # Volume Widget
 w_vol = {
-    "background": colorz[8],
     "fmt": "🎧 {}",
     }
     
 # Clock
 w_clock = {
-    "background": colorz[5],
     "format": "%d-%m-%Y %a %I:%M %p",
     }
 
 # Keyboard layouts
 w_key_l = {
-    "background": colorz[7],
     "configured_keyboards": ['us','iq ku_ara','de','ar'],
     "display_map": {"us":"EN",
                     "iq ku_ara":"KU",
                     "de":"DE",
                     "ar":"AR"},    
     }
-    
-
+      
     
 screens = [
     Screen(
@@ -338,30 +305,68 @@ screens = [
                 CurrentLayoutIcon(custom_icon_paths=wd_icon),
                 Sep(**w_sep),
                 GroupBox(**w_gbox,),
-                TextBox(text="🤗",
-                    fontsize="20",
-                    padding=5,),
+                TextBox(text= "🤗",
+                    fontsize= "16",
+                    padding= 5,),
                 Prompt(**w_prompt,),
-                WindowName(foreground=colorz[1]),
+                WindowName(foreground= colorz[1]),
 
                 Systray(),
-                Sep(**f_w_sep),
+
+                TextBox(
+                    text= "[",
+                    foreground= colorz[2],
+                    fontsize= 18,
+                    ),
                 Net(**w_net),
-                Sep(**f_w_sep),
+                TextBox(
+                    text= "]",
+                    foreground= colorz[2],
+                    fontsize= 18,
+                    ),
+
+                TextBox(
+                    text= "[",
+                    foreground= colorz[4],
+                    fontsize= 18,
+                    ),
                 Volume(**w_vol),
-                Sep(**f_w_sep),   
+                TextBox(
+                    text= "]",
+                    foreground= colorz[4],
+                    fontsize= 18,
+                    ),
+
+                TextBox(
+                    text= "[",
+                    foreground= colorz[3],
+                    fontsize= 18,
+                    ),
                 Clock(**w_clock),
-                Sep(**f_w_sep),
+                TextBox(
+                    text= "]",
+                    foreground= colorz[3],
+                    fontsize= 18,
+                    ),
+
+                TextBox(
+                    text= "[",
+                    foreground= colorz[1],
+                    fontsize= 18,
+                    ),
                 KeyboardLayout(**w_key_l),
-                Sep(**f_w_sep),
+                TextBox(
+                    text= "]",
+                    foreground= colorz[1],
+                    fontsize= 18,
+                    ),
                
             ],
-            30,
-            opacity=0.95,
+            24,
+            opacity=0.90,
         ),
     ),
 ]
-
 
 
 # Drag floating layouts.
@@ -373,7 +378,6 @@ mouse = [
     Click([mod], "Button2", lazy.window.bring_to_front())
 ]
 
-#http://docs.qtile.org/en/latest/manual/config/index.html
 dgroups_app_rules = []  # type: List
 main = None
 follow_mouse_focus = True
