@@ -105,8 +105,8 @@ layouts = [
 keys = [
     Key(
         [mod], "Return",
-        lazy.spawn("st"),
-        desc="Launch simple Terminal"    
+        lazy.spawn("alacritty"),
+        desc="Launch Alacritty Terminal"    
     ),
     
     Key(
@@ -239,7 +239,7 @@ wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
 ##### Custom Widget Settings ######
 widget_defaults = dict(
-    font='San Francisco Display',
+    font='mononoki',
     fontsize=14,
     padding=3,
     background=colorz[0], #Panel BG
