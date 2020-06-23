@@ -239,7 +239,7 @@ wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
 ##### Custom Widget Settings ######
 widget_defaults = dict(
-    font='mononoki',
+    font='San Francisco Display',
     fontsize=14,
     padding=3,
     background=colorz[0], #Panel BG
