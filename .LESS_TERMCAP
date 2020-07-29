@@ -1,0 +1,10 @@
+export LESS_TERMCAP_ks=$'\e[1;32m'	# make the keypad send commands
+export LESS_TERMCAP_ke=$'\e[1;32m'	# make the keypad send digits
+export LESS_TERMCAP_vb=$'\e[1;32m'	# emit visual bell
+export LESS_TERMCAP_mb=$'\e[01;31m'	# begin blink : RED
+export LESS_TERMCAP_md=$'\e[1;32m'	# begin bold : GREEN
+export LESS_TERMCAP_me=$'\e[0m'		# turn off bold, blink and underline
+export LESS_TERMCAP_so=$'\e[01;33m'	# begin standout (reverse video) : YELLOW
+export LESS_TERMCAP_se=$'\e[0m'		# reset standout (reverse video)
+export LESS_TERMCAP_us=$'\e[1;4;36m'	# begin underline : CYAN
+export LESS_TERMCAP_ue=$'\e[0m'		# reset underline
