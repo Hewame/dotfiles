@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Compatable with Qtile version : "0.15.1.dev120+ga07667bf" or later.
-# Modified by : Hewa Saleem
-#  
+# Compatable with Qtile version : "0.17.1.dev116+g2a18a003" or later.
+# Modified by : Hewa Saleem K.
+#
 # Copyright (c) 2010 Aldo Cortesi
 # Copyright (c) 2010, 2014 dequis
 # Copyright (c) 2012 Randall Ma
@@ -28,11 +28,24 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
 
-from libqtile.config import Key, Screen, Group, Drag, Click
+from typing import List  # noqa: F401
+
+# mouse_callbacks
+""" Callback functions can be assigned to button presses by passing a dict to the
+  'callbacks' kwarg. No arguments are passed to the callback function so, if
+   you need access to the qtile object, it needs to be imported into your code.
+src : http://docs.qtile.org/en/latest/_modules/libqtile/widget/base.html """
+from libqtile import qtile
+
+#----- Built-in Extensions: WindowList
+from libqtile.extension import WindowList
+
+import os, subprocess
+from libqtile import bar, layout, hook
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
-from libqtile import layout, bar
+from libqtile.utils import guess_terminal
 from libqtile.widget import (
     CurrentLayoutIcon,
     Sep,
@@ -45,208 +58,158 @@ from libqtile.widget import (
     Volume,
     Clock,
     KeyboardLayout,
+    WindowCount,
+#    CapsNumLockIndicator,
+#    Chord,
+    QuickExit,
     )
 
-from typing import List  # noqa: F401
-
 mod = "mod4"
+terminal = guess_terminal()
 
-##### Define Groups #####
+#----- Groups
 groups = [
-    Group("WEB", layout='monadtall',),
-    Group("DEV", layout='monadtall',),
-    Group("STK", layout='monadwide',),
-    Group("FLO", layout='floating',),
-    Group("MAX", layout='max',),  
+    Group("WEB", layout='monadtall', matches=[Match(wm_class=["chromium"])]),
+    Group("RED", layout='monadwide',),
+    Group("DEV", layout='matrix', matches=[Match(wm_class=["nemo"])]),
+    Group("ZOO", layout='zoomy',),
+    Group("MAX", layout='max', matches=[Match(wm_class=["etl"])]),
 ]
 
-##### Play around Groups #####
+
+#----- Play around Groups
 # MOD4 + index Number : Switch to Group[index]
-# MOD4 + shift + index Number : Send current window to another Group
+# MOD4 + shift + index Number : Send active window to another Group
 from libqtile.dgroups import simple_key_binder
-dgroups_key_binder = simple_key_binder(mod)
+dgroups_key_binder = simple_key_binder("mod4")
 
-##### GLOBAL COLORS, Yes ColorZ! #####
-colorz = ("#00172D", #[0] Maastricht Dark-Blue : Panle BG
-          "#2ABB9B", #[1] TURQUOISE Green : Border Line >> Active Tab >> Group
-          "#FFA400", #[2] BRIGHT GOLDEN Yellow : Inactive Group Names
-          "#F22613", #[3] POMEGRANATE Red : Active Group Names
-          "#19B5FE", #[4] DODGER BLUE : Selected Group
-          "#5A13F2", #[5] PURPLE : Focused Window Border          
-          "#006400", #[6] DARK-GREEN :  Normal Window Border      
+#----- Key Bindings
+keys = [
+    # Switch between windows
+    Key([mod], "h", lazy.layout.left(), desc="move focus to left"),
+    Key([mod], "l", lazy.layout.right(), desc="move focus to right"),
+    Key([mod], "j", lazy.layout.down(), desc="move focus down"),
+    Key([mod], "k", lazy.layout.up(), desc="move focus up"),
+    Key([mod], "space", lazy.layout.next(),
+        desc="Move window focus to other window"),
+
+    # Move windows between left/right columns or move up/down in current stack.
+    Key([mod, "shift"], "h", lazy.layout.swap_left(),
+        desc="move active window >> left",),
+    Key([mod, "shift"], "l", lazy.layout.swap_right(),
+        desc="move active window >> right",),
+    Key([mod, "shift"], "j", lazy.layout.shuffle_down(),
+        desc="move active window >> down",),
+    Key([mod, "shift"], "k", lazy.layout.shuffle_up(),
+        desc="move active window >> up",),
+    
+    # Change window size/ratio
+    Key([mod], "i", lazy.layout.grow(),
+        desc="expand window size/ratio",),
+    Key([mod], "m", lazy.layout.shrink(),
+        desc="shrink/decrease window size/ratio",),
+    Key([mod], "n", lazy.layout.normalize(),
+        desc="normalize stack size/ratio",),
+    Key([mod], "o", lazy.layout.maximize(),
+        desc="maximize active window size/ratio : stack",),
+    Key([mod], "c", lazy.layout.reset(),
+        desc="reset all windows",),
+    Key([mod, "shift"], "space", lazy.layout.flip(),
+        desc="flip stack layout",),
+
+    # Float active window or reset to the correct order
+    Key([mod, "shift"], "f", lazy.window.toggle_floating(),
+        desc="Toogle Floating"),
+
+    # Applications
+    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod], "p", lazy.spawn("dmenu_run -i"), desc="dmenu"),
+    Key([mod, "shift"], "w", lazy.spawn("chromium"),
+        desc="Launch Chromium Browser"),
+
+    Key(["control"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
+
+    # Toggle between different layouts as defined below
+    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
+    Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
+
+    Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
+    Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod], "r", lazy.spawncmd(),
+        desc="Spawn a command using a prompt widget"),
+
+    # List open windows in dmenu 
+    Key([mod], "u", lazy.run_extension(WindowList(
+        item_format="{id}: {window} >>> {group}",)),
+        desc="Give vertical list of all open windows in dmenu. Switch to selected",
+        ),
+]
+
+#----- GLOBAL COLORZ, Yep ColorZ!
+colorz = ("#000000", #[0] Dark Panel BG
+          "#2ABB9B", #[1] Green : Border Line >> Active Tab >> Group
+          "#FFa400", #[2] Yellow: Inactive Group Names
+          "#F22613", #[3] Red   : Active Group Names
+          "#19B5FE", #[4] Blue  : Selected Group
+          "#ff0000", #[5] light Red : Focused Window Border
+          "#5aff00", #[6] Green : Normal Window Border
           )
-
-##### Custom Layout Settings #####
+#------ GLOBAL Layout Settings
 layout_monad = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
     "border_width": 2,
-    "margin": 6,
-    "single_border_width" : 2,
-    "single_margin" : 6,
-                }
-
+    "margin": 2,
+    "single_border_width": 2,
+    "single_margin": 2,
+    }
 layout_flo = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
     "border_width": 2,
     "fullscreen_border_width": 2,
     }
-    
-##### Layouts #####
+layout_zoomy = {
+    "columnwidth": 200,
+    "margin": 2,
+    }
+layout_matrix = {
+    "border_focus": colorz[5],
+    "border_normal": colorz[6],
+    "border_width": 2,
+    "margin": 2,
+    }
+
 layouts = [
-    layout.MonadTall(**layout_monad,ratio= 0.6),
+    layout.MonadTall(**layout_monad,ratio=0.6),
     layout.MonadWide(**layout_monad),
-    layout.Max(),                        
-    layout.Floating(**layout_flo),
-    ]
-
-##### Key Bindings #####
-keys = [
-    Key(
-        [mod], "Return",
-        lazy.spawn("alacritty"),
-        desc="Launch Alacritty Terminal"    
-    ),
-    
-    Key(
-        [mod, "shift"], "w",
-        lazy.spawn("chromium"),
-        desc="Launch Chromium Browser"    
-    ),    
-    
-    Key(
-        [mod, "shift"], "g",
-        lazy.spawn("gedit"),
-        desc="Launch Gnome Text Editor"    
-    ),
-
-    Key(
-        [mod], "h",
-        lazy.layout.grow(),
-        lazy.layout.increase_nmaster(),
-        desc="Exapand window (MTall), increase..."    
-    ),    
-
-    Key(   
-        [mod], "l",
-        lazy.layout.shrink(),
-        lazy.layout.decrease_nmaster(),
-        desc="Shrink window (MTall), decrease..."    
-    ),      
-    
-    Key(   
-        [mod], "k",
-        lazy.layout.down(),
-        desc="Switch between windows in current stack pane"    
-    ),      
-
-    Key(   
-        [mod], "j",
-        lazy.layout.up(),
-        desc="Switch between windows in current stack pane"    
-    ),      
-
-    Key(   
-        [mod], "n",
-        lazy.layout.normalize(),
-        desc="Normalize window size ratios"    
-    ),  
-
-    Key(   
-        [mod, "shift"], "h",
-        lazy.layout.swap_left(),
-        desc="Move active window to left "    
-    ), 
-
-    Key(   
-        [mod, "shift"], "l",
-        lazy.layout.swap_right(),
-        desc="Move active window to right "    
-    ), 
-
-    Key(   
-        [mod, "shift"], "j",
-        lazy.layout.shuffle_down(),
-        desc="Move active window to down"    
-    ), 
-
-    Key(   
-        [mod, "shift"], "k",
-        lazy.layout.shuffle_up(),
-        desc="Move active window to up"    
-    ),             
-    
-    Key(   
-        [mod, "shift"], "space",
-        lazy.layout.rotate(),
-        lazy.layout.flip(),
-        desc="Switch which side main pane occupies (MTall)"    
-    ),  
-    
-    Key(
-        [mod], "Tab",
-        lazy.next_layout(),
-        desc="Toggle between different layouts"    
-    ),
-
-    Key(
-        [mod], "w",
-        lazy.window.kill(),
-        desc="Kill active window"    
-    ),
-
-    Key(
-        [mod, "control"], "r",
-        lazy.restart(),
-        desc="Restart/Reload Qtile"    
-    ),
-    
-    Key(
-        [mod, "control"], "q",
-        lazy.shutdown(),
-        desc="Shutdown Qtile"    
-    ),
-    
-    Key(
-        [mod], "r",
-        lazy.spawncmd(),
-        desc="Built-in Launcher"    
-    ),
-
-    Key(
-        [mod, "shift"], "f",
-        lazy.window.toggle_floating(),
-        desc="Toogle Floating"    
-    ),
-
-    Key(
-        [mod, "shift"], "m",
-        lazy.window.toggle_fullscreen(),
-        desc="Toogle Fullscreen"    
-    ),
-
-    Key(
-        [mod], "p",
-        lazy.spawn("dmenu_run -i -c -l 15"),
-        desc="Dmenu"
-    ),
+    layout.Matrix(**layout_matrix),
+    layout.Zoomy(**layout_zoomy),
+    layout.Max(),
+    # layout.Columns(border_focus_stack='#d75f5f'),
+    # Try more layouts by unleashing below layouts.
+    # layout.Stack(num_stacks=2),
+    # layout.Bsp(),
+    # layout.RatioTile(),
+    # layout.Tile(),
+    # layout.TreeTab(),
+    # layout.VerticalTile(),
 ]
 
-##### Random Global Variables #####
-# Custom Icon Paths for CurrentLayoutIcon Widget
-wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
-##### Custom Widget Settings ######
+#----- Widget Settings
 widget_defaults = dict(
     font='San Francisco Display',
     fontsize=14,
     padding=3,
-    background=colorz[0], #Panel BG
-)
-extension_defaults = widget_defaults.copy()
+    background=colorz[0], #Panel Background
+    )
 
-##### Theme Settings for Widgets #####
+#----- Random Global Variables
+#----- Custom Icon Path for CurrentlayoutIcon Widget
+wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
+
+#----- Widget Themes
 # Widget Seperator
 w_sep = {
     "background": colorz[0],
@@ -254,7 +217,7 @@ w_sep = {
     "linewidth":8,
     "size_percent":60,
     }
-       
+
 # Widget GroupBox, This is not AGroupBox
 w_gbox = {
     "active": colorz[3],
@@ -263,7 +226,8 @@ w_gbox = {
     "inactive": colorz[2],
     "this_current_screen_border": colorz[1],
     "this_screen_border": colorz[2],
-    }    
+    }
+
 
 # Launcher
 w_prompt = {
@@ -272,7 +236,7 @@ w_prompt = {
     "prompt": "Start:   ",
     }
 
-# NIC : Network Interfaces    
+# NIC : Network Interfaces
 w_net = {
     "format": "{down} ↓↑ {up}",
     "interface": "wlx7cdd90399231",
@@ -282,22 +246,26 @@ w_net = {
 w_vol = {
     "fmt": "🎧 {}",
     }
-    
+
 # Clock
 w_clock = {
     "format": "%d-%m-%Y %a %I:%M %p",
-    }
+}
 
 # Keyboard layouts
 w_key_l = {
-    "configured_keyboards": ['us','iq ku_ara','de','ar'],
+    "configured_keyboards": ['us','de','iq ku_ara', 'ar'],
     "display_map": {"us":"EN",
                     "iq ku_ara":"KU",
                     "de":"DE",
-                    "ar":"AR"},    
-    }
-      
-    
+                    "ar":"AR"},
+}
+
+# Open File Manager
+def open_fm():
+    qtile.cmd_spawn('nemo')
+
+
 screens = [
     Screen(
         top=bar.Bar(
@@ -305,62 +273,25 @@ screens = [
                 CurrentLayoutIcon(custom_icon_paths=wd_icon),
                 Sep(**w_sep),
                 GroupBox(**w_gbox,),
-                TextBox(text= "🤗",
-                    fontsize= "16",
-                    padding= 5,),
-                Prompt(**w_prompt,),
-                WindowName(foreground= colorz[1]),
-
-                Systray(),
-
-                TextBox(
-                    text= "[",
-                    foreground= colorz[2],
-                    fontsize= 18,
-                    ),
-                Net(**w_net),
-                TextBox(
-                    text= "]",
-                    foreground= colorz[2],
-                    fontsize= 18,
-                    ),
-
-                TextBox(
-                    text= "[",
-                    foreground= colorz[4],
-                    fontsize= 18,
-                    ),
+                TextBox(text="🐸", fontsize="16", padding=5,),
+                WindowCount(),
+                Prompt(**w_prompt),
+                WindowName(foreground=colorz[1]),
+                TextBox(text="📂", fontsize="16", padding=5, mouse_callbacks={'Button1': open_fm},),
+                Systray(icon_size=20),
+                TextBox(text="[", foreground=colorz[2], fontsize=18,),
+                Net(**w_net,),
+                TextBox(text="]", foreground=colorz[2], fontsize=18,),
+                TextBox(text= "[", foreground= colorz[4], fontsize= 18,),
                 Volume(**w_vol),
-                TextBox(
-                    text= "]",
-                    foreground= colorz[4],
-                    fontsize= 18,
-                    ),
-
-                TextBox(
-                    text= "[",
-                    foreground= colorz[3],
-                    fontsize= 18,
-                    ),
+                TextBox(text= "]", foreground= colorz[4], fontsize= 18,),
+                TextBox(text= "[", foreground= colorz[3], fontsize= 18,),
                 Clock(**w_clock),
-                TextBox(
-                    text= "]",
-                    foreground= colorz[3],
-                    fontsize= 18,
-                    ),
-
-                TextBox(
-                    text= "[",
-                    foreground= colorz[1],
-                    fontsize= 18,
-                    ),
+                TextBox(text= "]", foreground= colorz[3], fontsize= 18,),
+                TextBox(text= "[", foreground= colorz[1], fontsize= 18,),
                 KeyboardLayout(**w_key_l),
-                TextBox(
-                    text= "]",
-                    foreground= colorz[1],
-                    fontsize= 18,
-                    ),
-               
+                TextBox(text= "]", foreground= colorz[1], fontsize= 18,),
+
             ],
             24,
             opacity=0.90,
@@ -368,6 +299,12 @@ screens = [
     ),
 ]
 
+
+#----- Autostart app
+@hook.subscribe.startup_once
+def autostart():
+    home = os.path.expanduser('~/.config/qtile/autostart.sh')
+    subprocess.call([home])
 
 # Drag floating layouts.
 mouse = [
@@ -378,31 +315,25 @@ mouse = [
     Click([mod], "Button2", lazy.window.bring_to_front())
 ]
 
+#dgroups_key_binder = None #HSK
 dgroups_app_rules = []  # type: List
-main = None
+main = None  # WARNING: this is deprecated and will be removed soon
 follow_mouse_focus = True
-bring_front_click = True
+bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(**layout_flo, float_rules=[
     # Run the utility of `xprop` to see the wm class and name of an X client.
-    {'wmclass': 'confirm'},
-    {'wmclass': 'dialog'},
-    {'wmclass': 'download'},
-    {'wmclass': 'error'},
-    {'wmclass': 'file_progress'},
-    {'wmclass': 'notification'},
-    {'wmclass': 'splash'},
-    {'wmclass': 'toolbar'},
-    {'wmclass': 'confirmreset'},  # gitk
-    {'wmclass': 'makebranch'},  # gitk
-    {'wmclass': 'maketag'},  # gitk
-    {'wname': 'branchdialog'},  # gitk
-    {'wname': 'pinentry'},  # GPG key password entry
-    {'wmclass': 'ssh-askpass'},  # ssh-askpass
+    *layout.Floating.default_float_rules,
+    Match(wm_class='confirmreset'),  # gitk
+    Match(wm_class='makebranch'),  # gitk
+    Match(wm_class='maketag'),  # gitk
+    Match(wm_class='ssh-askpass'),  # ssh-askpass
+    Match(title='branchdialog'),  # gitk
+    Match(title='pinentry'),  # GPG key password entry
 ])
-
-auto_fullscreen = False
+auto_fullscreen = True
 focus_on_window_activation = "smart"
+reconfigure_screens = True
 
 # XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
 # string besides java UI toolkits; you can see several discussions on the
