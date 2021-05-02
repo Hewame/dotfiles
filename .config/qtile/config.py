@@ -127,7 +127,7 @@ keys = [
     Key([mod, "shift"], "w", lazy.spawn("chromium"),
         desc="Launch Chromium Browser"),
 
-    Key(["control"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
+    Key([mod, "shift"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
 
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
