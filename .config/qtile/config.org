@@ -30,7 +30,6 @@
 - [[#drag-floating-layouts][Drag floating layouts.]]
 
 * About
-#+begin_comment
  Compatable with Qtile version : "0.17.1.dev116+g2a18a003" or later.
  Modified by : Hewa Saleem K.
 
@@ -59,7 +58,6 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
-#+end_comment
 
 * Installation
 See [[https://github.com/Hewame/Dotfiles/blob/master/.config/qtile/README.org][README.org]]
