@@ -1,0 +1,95 @@
+#+TITLE: Qtile
+#+DESCRIPTION: Qtile A full-featured, hackable tiling window manager written and configured in Python
+#+AUTHOR: Hewa Saleem K.
+#+LANGUAGE: en
+#+PRIORITIES: header-args:sh :results none
+#+PRIORITIES: header-args:python :tangle-mode (identity #o755)
+
+* About
+This demo instructed on a minimal Debian 10 installation.
+No GUI, Desktop Environment require at all.
+you may use a graphical Xsession manager to manage session which is optional
+
+* Installing requirements
+#+begin_example
+~$ sudo apt install xorg python3-dbus python-gobject python3-pip git alsa-utils fonts-noto-color-emoji
+~$ sudo apt install libxcb-render0-dev libffi-dev libcairo2 libpangocairo-1.0-0 libxcb-cursor0
+~$ pip3 install xcffib
+~$ pip3 install psutil
+~$ pip3 install --no-cache-dir cairocffi
+#+end_example
+
+* Installing Qtile, running on Python3
+With the dependencies in place, run the following commands to
+install latest Qtile from source.
+#+begin_example
+~$ git clone git://github.com/qtile/qtile.git
+~$ cd qtile
+~$ pip3 install .
+#+end_example
+
+* Add Qtile to your system PATH
+#+begin_example
+~$ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+~$ source ~/.bashrc
+#+end_example
+
+* Qtile configuration
+See file:config.org
+
+* Autostart Applications
+#+begin_src sh :tangle ~/.config/qtile/autostart.sh :shebang "#!/bin/sh"
+nitrogen --restore &
+compton &
+nm-applet &
+#+end_src
+
+* Starting Qtile
+** Xsession Manager : Lightdm
+- Install lightdm
+   ~$ sudo apt-get install lightdm
+- Generate .Xsession
+#+begin_src sh :tangle ~/.Xsession :shebang "#!/bin/sh"
+#exec /usr/bin/lxsession -s custom -e custom &
+#exec /usr/bin/lxsession -s qtile -e qtile -noautostart &
+exec /usr/bin/lxsession -s qtile -e qtile &
+export "PATH=$HOME/.local/bin:$PATH"
+exec qtile start
+#+end_src
+- Generate qtile.desktop
+ move qtile.desktop to "/usr/share/xsessions/" require root permission
+#+begin_src sh :tangle ~/qtile.desktop
+[Desktop Entry]
+Name=Qtile
+Comment=Qtile Session
+Exec=/etc/X11/Xsession
+Type=Application
+Keywords=wm;tiling
+#+end_src
+** via .xinitrc
+- Generate .xinitrc
+#+begin_src sh :tangle ~/.xinitrc :shebang "#!/bin/sh"
+#compton &
+#nitrogen --restore &
+qtile start
+#bash $HOME/sbar.sh &
+#exec dwm
+#+end_src
+- Start Xsession
+#+begin_example
+~$ startx
+#+end_example
+* Debugging
+#+begin_example
+~$ more ~/.local/share/qtile/qtile.log
+~$ qtile -l
+#+end_example
+
+* Virtualbox Users (Optional)
+If you would like to get the Full size screen follow this
+instruction [[https://forums.virtualbox.org/viewtopic.php?t=15679][Install Linux Guest Additions]] or run the following commands:
+#+begin_example
+~$ sudo apt install dkms build-essential linux-headers-$(uname -r)
+~$ sudo mount /dev/sr0 /media/cdrom ; cd /media/cdrom
+~$ sudo sh ./VBoxLinuxAdditions.run
+#+end_example

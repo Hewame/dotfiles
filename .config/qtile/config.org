@@ -1,4 +1,36 @@
-# -*- coding: utf-8 -*-
+#+TITLE: My Qtile Config
+#+AUTHOR: Hewa Saleem K.
+#+LANGUAGE: en
+#+PROPERTY: header-args:python :tangle ~/.config/qtile/config.py :results silent :tangle-mode (identity #o755)
+
+* Table of Content :toc:
+- [[#about][About]]
+- [[#installation][Installation]]
+- [[#imports][Imports]]
+- [[#default-modkey][Default ModKey]]
+- [[#groups][Groups]]
+  - [[#active-groups][Active Groups]]
+  - [[#switch-between-groups][Switch between Groups]]
+- [[#key-bindings][Key Bindings]]
+- [[#colors][Colors]]
+- [[#global-layout-settings][Global Layout Settings]]
+- [[#layouts][Layouts]]
+- [[#widget-settings][Widget Settings]]
+- [[#random-global-variables][Random Global Variables]]
+- [[#widget-themes][Widget Themes]]
+  - [[#widget-seperator][Widget Seperator]]
+  - [[#widget-groupbox-this-is-not-agroupbox][Widget GroupBox, This is not AGroupBox]]
+  - [[#launcher][Launcher]]
+  - [[#nic--network-interfaces][NIC : Network Interfaces]]
+  - [[#volume-widget][Volume Widget]]
+  - [[#clock][Clock]]
+  - [[#keyboard-layouts][Keyboard layouts]]
+- [[#screens][Screens]]
+- [[#autostart-applications][Autostart Applications]]
+- [[#drag-floating-layouts][Drag floating layouts.]]
+
+* About
+#+begin_quote
 # Compatable with Qtile version : "0.17.1.dev116+g2a18a003" or later.
 # Modified by : Hewa Saleem K.
 #
@@ -27,15 +59,21 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#+end_quote
 
+* Installation
+See file:README.org
 
+* Imports
+#+begin_comment
+Mouse callbacks require qtile object from libqtile,
+see [[http://docs.qtile.org/en/latest/_modules/libqtile/widget/base.html]]
+#+end_comment
+#+begin_src python
+# -*- coding: utf-8 -*-
 from typing import List  # noqa: F401
 
 # mouse_callbacks
-""" Callback functions can be assigned to button presses by passing a dict to the
-  'callbacks' kwarg. No arguments are passed to the callback function so, if
-   you need access to the qtile object, it needs to be imported into your code.
-src : http://docs.qtile.org/en/latest/_modules/libqtile/widget/base.html """
 from libqtile import qtile
 
 #----- Built-in Extensions: WindowList
@@ -63,11 +101,17 @@ from libqtile.widget import (
 #    Chord,
     QuickExit,
     )
+#+end_src
 
+* Default ModKey
+#+begin_src python
 mod = "mod4"
 terminal = guess_terminal()
+#+end_src
 
-#----- Groups
+* Groups
+** Active Groups
+#+begin_src python
 groups = [
     Group("WEB", layout='monadtall', matches=[Match(wm_class=["chromium"])]),
     Group("RED", layout='monadwide',),
@@ -75,14 +119,47 @@ groups = [
     Group("ZOO", layout='zoomy',),
     Group("MAX", layout='max', matches=[Match(wm_class=["etl"])]),
 ]
-
-
+#+end_src
+** Switch between Groups
+#+begin_src python
 #----- Play around Groups
 # MOD4 + index Number : Switch to Group[index]
 # MOD4 + shift + index Number : Send active window to another Group
 from libqtile.dgroups import simple_key_binder
 dgroups_key_binder = simple_key_binder("mod4")
+#+end_src
 
+* Key Bindings
+List of defined Keys
+| Keys                 | Actions                                   |
+|----------------------+-------------------------------------------|
+| MODKEY + h           | Move focus to left                        |
+| MODKEY + l           | Move focus to right                       |
+| MODKEY + j           | Move focus down                           |
+| MODKEY + k           | Move focus up                             |
+| MODKEY + SPC         | Move window focus to other window         |
+| MODKEY + shift + h   | Move active window to left                |
+| MODKEY + shift + l   | Move active window to right               |
+| MODKEY + shift + j   | Move active window to down                |
+| MODKEY + shift + k   | Move active window to up                  |
+| MODKEY + i           | Expand window size/ratio                  |
+| MODKEY + m           | Shrink/Decrease window size/ratio         |
+| MODKEY + n           | Normalize STACK size/ratio                |
+| MODKEY + o           | Maximize active window size/ratio : stack |
+| MODKEY + c           | Reset all windows                         |
+| MODKEY + shift + SPC | Flip stack layout                         |
+| MODKEY + shift + f   | Toggle floating                           |
+| MODKEY + RET         | Launch Terminal                           |
+| MODKEY + p           | Launch dmenu                              |
+| MODKEY + shift + w   | Launch Chromium                           |
+| MODKEY + shift + RET | Next Keyboard Layout                      |
+| MODKEY + TAB         | Toggle between Layouts                    |
+| MODKEY + w           | Kill focused window                       |
+| MODKEY + CTR + r     | Restart Qtile                             |
+| MODKEY + CTR + q     | Shutdown Qtile                            |
+| MODKEY + r           | Spawn a coomand using a prompt widget     |
+| MODKEY + u           | Vertical list of all windows : dmenu      |
+#+begin_src python
 #----- Key Bindings
 keys = [
     # Switch between windows
@@ -119,7 +196,7 @@ keys = [
 
     # Float active window or reset to the correct order
     Key([mod, "shift"], "f", lazy.window.toggle_floating(),
-        desc="Toogle Floating"),
+        desc="Toggle Floating"),
 
     # Applications
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
@@ -144,7 +221,10 @@ keys = [
         desc="Give vertical list of all open windows in dmenu. Switch to selected",
         ),
 ]
+#+end_src
 
+* Colors
+#+begin_src python
 #----- GLOBAL COLORZ, Yep ColorZ!
 colorz = ("#000000", #[0] Dark Panel BG
           "#2ABB9B", #[1] Green : Border Line >> Active Tab >> Group
@@ -154,7 +234,11 @@ colorz = ("#000000", #[0] Dark Panel BG
           "#ff0000", #[5] light Red : Focused Window Border
           "#5aff00", #[6] Green : Normal Window Border
           )
-#------ GLOBAL Layout Settings
+#+end_src
+
+* Global Layout Settings
++ Monad
+#+begin_src python
 layout_monad = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
@@ -163,23 +247,35 @@ layout_monad = {
     "single_border_width": 2,
     "single_margin": 2,
     }
+#+end_src
++ Floating
+#+begin_src python
 layout_flo = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
     "border_width": 2,
     "fullscreen_border_width": 2,
     }
+#+end_src
++ Zoomy
+  #+begin_src python
 layout_zoomy = {
     "columnwidth": 200,
     "margin": 2,
     }
+  #+end_src
++ Matrix
+  #+begin_src python
 layout_matrix = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
     "border_width": 2,
     "margin": 2,
     }
+#+end_src
 
+* Layouts
+#+begin_src python
 layouts = [
     layout.MonadTall(**layout_monad,ratio=0.6),
     layout.MonadWide(**layout_monad),
@@ -195,8 +291,10 @@ layouts = [
     # layout.TreeTab(),
     # layout.VerticalTile(),
 ]
+#+end_src
 
-
+* Widget Settings
+#+begin_src python
 #----- Widget Settings
 widget_defaults = dict(
     font='San Francisco Display',
@@ -204,21 +302,31 @@ widget_defaults = dict(
     padding=3,
     background=colorz[0], #Panel Background
     )
+#+end_src
 
+* Random Global Variables
+#+begin_src python
 #----- Random Global Variables
 #----- Custom Icon Path for CurrentlayoutIcon Widget
 wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
-#----- Widget Themes
-# Widget Seperator
+# Default File Manager
+def open_fm():
+    qtile.cmd_spawn('nemo')
+#+end_src
+
+* Widget Themes
+** Widget Seperator
+#+begin_src python
 w_sep = {
     "background": colorz[0],
     "foreground": colorz[2],
     "linewidth":8,
     "size_percent":60,
     }
-
-# Widget GroupBox, This is not AGroupBox
+#+end_src
+** Widget GroupBox, This is not AGroupBox
+  #+begin_src python
 w_gbox = {
     "active": colorz[3],
     "block_highlight_text_color": colorz[4],
@@ -227,32 +335,36 @@ w_gbox = {
     "this_current_screen_border": colorz[1],
     "this_screen_border": colorz[2],
     }
-
-
-# Launcher
+  #+end_src
+** Launcher
+  #+begin_src python
 w_prompt = {
     "cursor_color": colorz[3],
     "padding": 5,
     "prompt": "Start:   ",
     }
-
-# NIC : Network Interfaces
+  #+end_src
+** NIC : Network Interfaces
+  #+begin_src python
 w_net = {
     "format": "{down} ↓↑ {up}",
     "interface": "wlx7cdd90399231",
     }
-
-# Volume Widget
+  #+end_src
+** Volume Widget
+  #+begin_src python
 w_vol = {
     "fmt": "🎧 {}",
     }
-
-# Clock
+  #+end_src
+** Clock
+  #+begin_src python
 w_clock = {
     "format": "%d-%m-%Y %a %I:%M %p",
 }
-
-# Keyboard layouts
+  #+end_src
+** Keyboard layouts
+  #+begin_src python
 w_key_l = {
     "configured_keyboards": ['us','de','iq ku_ara', 'ar'],
     "display_map": {"us":"EN",
@@ -260,12 +372,9 @@ w_key_l = {
                     "de":"DE",
                     "ar":"AR"},
 }
-
-# Open File Manager
-def open_fm():
-    qtile.cmd_spawn('nemo')
-
-
+  #+end_src
+* Screens
+#+begin_src python
 screens = [
     Screen(
         top=bar.Bar(
@@ -298,15 +407,22 @@ screens = [
         ),
     ),
 ]
+#+end_src
 
-
-#----- Autostart app
+* Autostart Applications
+#+begin_src python
 @hook.subscribe.startup_once
 def autostart():
     home = os.path.expanduser('~/.config/qtile/autostart.sh')
     subprocess.call([home])
+#+end_src
 
-# Drag floating layouts.
+* Drag floating layouts.
+#+begin_comment
+"dgroups_key_binder = None" should be commented out,
+otherwise MOD+i[N] functionality does not work
+#+end_comment
+#+begin_src python
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
          start=lazy.window.get_position()),
@@ -344,3 +460,4 @@ reconfigure_screens = True
 # We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
 # java that happens to be on java's whitelist.
 wmname = "LG3D"
+#+end_src
