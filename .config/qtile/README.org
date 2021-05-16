@@ -35,7 +35,7 @@ install latest Qtile from source.
 #+end_example
 
 * Qtile configuration
-See file:config.org
+See [[https://github.com/Hewame/Dotfiles/blob/master/.config/qtile/config.org][config.org]]
 
 * Autostart Applications
 #+begin_src sh :tangle ~/.config/qtile/autostart.sh :shebang "#!/bin/sh"
