@@ -22,7 +22,7 @@
   - [[#drag-floating-layouts][Drag floating layouts.]]
 
 * Configuration
-** Add Licence
+** Licence
 #+begin_src python
 # -*- coding: utf-8 -*-
 # Compatable with Qtile version : "0.18.0 Stable" or later.
