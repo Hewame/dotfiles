@@ -109,7 +109,7 @@ instruction [[https://forums.virtualbox.org/viewtopic.php?t=15679][Install Linux
 #+end_example
 
 * Configuration
-See [[LINK][DESCRIPTION]]
+See [[https://github.com/Hewame/Dotfiles/blob/master/.config/qtile/CONFIG.ORG][CONFIG.ORG]]
 * Debugging
 #+begin_example
 ~$ more ~/.local/share/qtile/qtile.log
