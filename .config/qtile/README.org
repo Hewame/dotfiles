@@ -72,7 +72,7 @@ qtile start
 
 ** Xsession Manager : Lightdm
 + Install lightdm
-   ~$ sudo apt-get install lightdm
+   ~$ sudo apt-get install lightdm lxpolkit
 + Generate .Xsession
 #+begin_src sh :tangle ~/.Xsession :shebang "#!/bin/sh"
 #exec /usr/bin/lxsession -s custom -e custom &
@@ -97,6 +97,7 @@ Keywords=wm;tiling
 nitrogen --restore &
 compton &
 nm-applet &
+lxpolkit &
 #+end_src
 
 ** Virtualbox (Optional)
