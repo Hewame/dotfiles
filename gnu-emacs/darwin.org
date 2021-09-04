@@ -1,0 +1,17 @@
+#+TITLE: Gnu Emacs OSX
+#+AUTHOR: HEWA S.
+
+* Fonts
+font face set for darwin/osx
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :font "SF Mono"
+                    :height 170
+                    :weight 'light)
+#+end_src
+
+* Screen
+#+begin_src emacs-lisp
+;;(toggle-frame-fullscreen)  ;; black screen frames
+(toggle-frame-maximized)
+#+end_src

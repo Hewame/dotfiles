@@ -1,0 +1,20 @@
+#+TITLE: Gnu Emacs Linux
+#+AUTHOR: HEWA S.
+
+* Fonts
+font face set for gnu/linux
+#+begin_src emacs-lisp
+(set-face-attribute 'default nil
+                    :font "JetBrainsMono Nerd Font Mono"
+                    :height 120
+                    :weight 'medium)
+
+#+end_src
+
+* Screen
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+;;(menu-bar-mode t)
+#+end_src
+
+   

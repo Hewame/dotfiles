@@ -1,0 +1,340 @@
+#+TITLE: Keybinding powerd by general.el and evil
+#+AUTHOR: HEWA S.
+
+* Table of Content :toc:
+- [[#spc-leader-key-global][SPC: Leader Key Global]]
+- [[#file-related-keybinding][File-related Keybinding]]
+- [[#buffer-and-bookmarks][Buffer and Bookmarks]]
+- [[#reload-configuration][Reload Configuration]]
+- [[#code][Code]]
+- [[#temporary-not-organized-yet][Temporary: not organized yet]]
+- [[#search][Search]]
+- [[#toggle][Toggle]]
+- [[#browse-private-config][Browse private config]]
+- [[#local-leader][Local Leader]]
+  - [[#univresal-argument-map][Univresal argument map]]
+- [[#elfeed][Elfeed]]
+- [[#org-formatmode][Org Format/Mode]]
+
+* SPC: Leader Key Global
+"SPC" in normal and visual states, otherwise "C-SPC" in insert and emacs states as a leader/prefix-key
+#+begin_src emacs-lisp
+(general-create-definer hewa/my-leader-key
+  :states '(normal visual insert emacs)
+  :keymaps 'override ;; prevent leader key from ever being overridden, (e.g. an evil package)
+  :prefix "SPC"
+  :non-normal-prefix "C-SPC"
+  ;; Overview
+  "RET" '(bookmark-jump :which-key "Jump to bookmark")
+  "SPC" '(counsel-M-x :which-key "M-x")
+  "w"   '(:keymap evil-window-map :which-key "window") ;; Bind keys to keymap
+  "h"   '(:keymap help-map :which-key "help")   ;; Bind keys to keymap
+  "g"   '(:keymap magit-mode-map :which-key "magit")   ;; Bind keys to keymap
+  "p"   '(:keymap projectile-command-map :which-key "projectile")   ;; Bind keys to keymap
+  "'"   '(ivy-resume :which-key "Resume last search")
+  ":"   '(counsel-M-x :which-key "M-x") ;;Todo change projecteil later
+  ","   '(counsel-switch-buffer :which-key "Switch buffer")
+  "u"   '(universal-argument :which-key "Universtal argument")
+  ;; bind nothing but give (SPC) or (C-SPC) a description for which-key
+  "f"   '(:ignore t :which-key "file")
+  "b"   '(:ignore t :which-key "buffer")
+  "c"   '(:ignore t :which-key "code")
+  "t"   '(:ignore t :which-key "toggle")
+  "r"   '(:ignore t :which-key "reload configuration")
+  "i"   '(:ignore t :which-key "insert")
+  "s"   '(:ignore t :which-key "search")
+  "k"   '(:ignore t :which-key "Emacs user directory")
+  "l"   '(elfeed :which-key "Elfeed")
+  "z"   '(:ignore t :which-key "Temporary: not-organized")
+ )
+;;(general-def ivy-minibuffer-map
+;;  "TAB" 'ivy-partial
+;;  )
+#+end_src
+* File-related Keybinding
+required functions are defined under helpers.org
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "."     '(find-file :which-key "Find file")
+  "f f"   '(find-file :which-key "Find file")
+  "f s"   '(save-buffer :which-key "Save file")
+  "f S"   '(write-file :which-key "Save file as...")
+  "f D"   '(delete-file :which-key "Delete file")
+  "f u"   '(doom/sudo-find-file :which-key "Sudo find file")
+  "f U"   '(doom/sudo-this-file :which-key "Sudo this file")
+  "f C"   '(doom/copy-this-file :which-key "Copy this file")
+  "f r"   '(counsel-recentf :which-key "Recent files")
+  "f R"   '(rename-file :which-key "Rename this file")
+  )
+#+end_src
+* Buffer and Bookmarks
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "b ["   '(previous-buffer :which-key "Previous buffer")
+  "b ]"   '(next-buffer :which-key "Next buffer")
+  "b b"   '(ivy-switch-buffer-other-window :which-key "Switch to buffer in a new split window")
+  "b B"   '(switch-to-buffer :which-key "Switch buffer")
+  "b c"   '(clone-indirect-buffer :which-key "Clone buffer")
+  "b C"   '(clone-indirect-buffer-other-window :which-key "Clone buffer other window")
+  "b i"   '(ibuffer :which-key "ibuffer")
+  "b k"   '(kill-current-buffer :which-key "Kill buffer")
+  "b l"   '(evil-switch-to-windows-last-buffer :which-key "Switch to last buffer")
+  "b m"   '(bookmark-set :which-key "Set bookmark")
+  "b M"   '(bookmark-delete :which-key "Delete bookmark")
+  "b n"   '(next-buffer :which-key "Next buffer")
+  "b N"   '(evil-buffer-new :which-key "New empty buffer")
+  "b p"   '(previous-buffer :which-key "Previous buffer")
+  "b r"   '(revert-buffer :which-key "Revert buffer")
+  "b s"   '(basic-save-buffer :which-key "Save buffer")
+  "b S"   '(evil-write-all :which-key "Save all buffers")
+  "b z"   '(bury-buffer :which-key "Bury buffer")
+  )
+#+end_src
+* Reload Configuration
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "r a"   '(hewa-all  :which-key "Reload all *.Org configuration")
+  "r c"   '(hewa-conf :which-key "Reload configuration")
+  "r k"   '(hewa-keys :which-key "Reload keybindings")
+  "r h"   '(hewa-help :which-key "Reload helpers")
+  )
+#+end_src
+* Code
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "c e"   '(eval-buffer :which-key "Eval entire buffer ELISP")
+  "c r"   '(eval-region :which-key "Eval marked region ELISP")
+  "c d"   '(eval-defun :which-key "Eval current block ELISP")
+  "c l"   '(:keymap lsp-command-map :which-key "LSP" :package lsp-mode) ;Todo, fix lsp prefix names
+  "c c"   '(compile :which-key "Compile")
+  "c C"   '(recompile :which-key "Recompile")
+  "c w"   '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
+  "c t"   '(org-indent-block :which-key "Org indent block")
+  )
+#+end_src
+* Temporary: not organized yet
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "z n"   '(org-next-block :which-key "org-next-block")
+  "z p"   '(org-previous-block :which-key "org-previous-block")
+  "z s"   '(yas-insert-snippet :which-key "Snippet")
+  "z u"   '(insert-char :which-key "Unicode")
+  "z e"   '(emojify-insert-emoji :which-key "Emoji")
+  )
+#+end_src
+* Search
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "s b" '(swiper                   :which-key "Search buffer")
+  "s B" '(swiper-all               :which-key "Search all open buffers")
+  "s f" '(locate                   :which-key "Locate file")
+  "s i" '(imenu                    :which-key "Jump to symbol")
+  "s l" '(link-hint-open-link      :which-key "Jump to visible link")
+  "s L" '(ffap-menu                :which-key "Jump to link")
+  "s j" '(evil-show-jumps          :which-key "Jump list")
+  "s m" '(bookmark-jump            :which-key "Jump to bookmark")
+  "s r" '(evil-show-marks          :which-key "Jump to mark")
+  "s S" '(swiper-isearch-thing-at-point     :which-key "Search buffer for thing at point")
+  )
+#+end_src
+* Toggle
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "t c" '(global-display-fill-column-indicator-mode :which-key "Fill Column Indicator")
+  "t f" '(toggle-frame-fullscreen :which-key "Frame fullscreen")
+  "t l" '(display-line-numbers-mode :which-key "Line numbers")
+  "t r" '(read-only-mode :which-key "Read-only mode")
+  "t p" '(org-tree-to-indirect-buffer :which-key "ort tree to indirect buffer")
+  "t v" '(visual-line-mode :which-key "Soft line wrapping")
+  )
+#+end_src
+* Browse private config
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "k i" '(hewa-open-init  :which-key "Open init.el")
+  "k c" '(hewa-open-conf  :which-key "Open config.org")
+  "k k" '(hewa-open-keys  :which-key "Open keybinding.org")
+  "k h" '(hewa-open-help  :which-key "Open helpers.org")
+  )
+#+end_src
+* Local Leader
+** Univresal argument map
+#+begin_src emacs-lisp
+(general-def universal-argument-map
+:prefix "SPC"
+  "u"   '(universal-argument-more :which-key "Universal argument more")
+  )
+#+end_src
+* Elfeed
+TODO: replace general-def with hewa/my-leader...
+#+begin_src emacs-lisp
+(general-def 'normal elfeed-search-mode-map
+  "l"   '(elfeed-search-show-entry :which-key "Show Entry")
+  "q"   '(elfeed-search-quit-window :which-key "quit")
+  "g"   '(elfeed-search-update--force :which-key "update")
+  "G"   '(elfeed-search-fetch :which-key "fetch")
+  "t"   '(elfeed-search-tag-all :which-key "tag")
+  "u"   '(elfeed-search-untag-all :which-key "untag")
+  "r"   '(elfeed-search-untag-all-unread :which-key "untag all unread")
+  "n"   '(elfeed-search-tag-all-unread :which-key "tag all unread")
+  "s"   '(elfeed-search-live-filter :which-key "live filter")
+  "S"   '(elfeed-search-set-filter :which-key "set filter")
+  "c"   '(elfeed-search-clear-filter :which-key "clear filter")
+  "?"   '(:keymap elfeed-search-mode-map :which-key "help")   ;; Bind keys to keymap
+  )
+
+(general-def 'normal elfeed-show-mode-map
+  "h"   '(elfeed-kill-buffer :which-key "close")
+  "q"   '(elfeed-kill-buffer :which-key "close")
+  "n"   '(elfeed-show-next :which-key "next article")
+  "p"   '(elfeed-show-prev :which-key "previous article")
+  "l"   '(elfeed-show-visit :which-key "open")
+  "t"   '(elfeed-show-tag :which-key "show tag")
+  "u"   '(elfeed-show-untag :which-key "show untag")
+  "?"   '(:keymap elfeed-show-mode-map :which-key "help")   ;; Bind keys to keymap
+  )
+#+end_src
+* Org Format/Mode
+ org Keybinding goes here!
+#+begin_src emacs-lisp
+;; org-todo-keywords config!
+(hewa/my-leader-key org-mode-map
+ ;; "m"   '(:keymap org-mode-map :which-key "org-mode") ;; Bind keys to keymap
+  "m"   '(:ignore t :which-key "org-mode")
+  "m h" '(org-toggle-heading :which-key "toggle heading")
+  "m #" '(org-update-statistics-cookies :which-key)
+  "m '" '(org-edit-special :which-key)
+  "m *" '(org-ctrl-c-star :which-key)
+  "m +" '(org-ctrl-c-minus :which-key)
+  "m ," '(org-switchb :which-key)
+  "m ." '(org-goto :which-key)
+  "m A" '(org-archive-subtree :which-key)
+  "m e" '(org-export-dispatch :which-key)
+  "m f" '(org-footnote-new :which-key)
+  "m h" '(org-toggle-heading :which-key)
+  "m i" '(org-toggle-item :which-key)
+  "m I" '(org-id-get-create :which-key)
+  "m n" '(org-store-link :which-key)
+  "m o" '(org-set-property :which-key)
+  "m q" '(org-set-tags-command :which-key)
+  "m t" '(org-todo :which-key)
+  "m T" '(org-todo-list :which-key)
+  "m x" '(org-toggle-checkbox :which-key)
+
+  "m a" '(:ignore t :which-key "attacments")
+  "m a a" '(org-attach :which-key)
+  "m a d" '(org-attach-delete-one :which-key)
+  "m a D" '(org-attach-delete-all :which-key)
+  "m a n" '(org-attach-new :which-key)
+  "m a o" '(org-attach-open :which-key)
+  "m a O" '(org-attach-open-in-emacs :which-key)
+  "m a r" '(org-attach-reveal :which-key)
+  "m a R" '(org-attach-reveal-in-emacs :which-key)
+  "m a u" '(org-attach-url :which-key)
+  "m a s" '(org-attach-set-directory :which-key)
+  "m a S" '(org-attach-sync :which-key)
+
+  "m b" '(:ignore t :which-key "tables")
+  "m b -" '(org-table-insert-hline :which-key)
+  "m b a" '(org-table-align :which-key)
+  "m b b" '(org-table-blank-field :which-key)
+  "m b c" '(org-table-create-or-convert-from-region :which-key)
+  "m b e" '(org-table-edit-field :which-key)
+  "m b f" '(org-table-edit-formulas :which-key)
+  "m b h" '(org-table-field-info :which-key)
+  "m b s" '(org-table-sort-lines :which-key)
+  "m b r" '(org-table-recalculate :which-key)
+  "m b R" '(org-table-recalculate-buffer-tables :which-key)
+
+  "m b d" '(:ignore t :which-key "delete")
+  "m b d c" '(org-table-delete-column :which-key)
+  "m b d r" '(org-table-kill-row :which-key)
+
+  "m b i" '(:ignore t :which-key "insert")
+  "m b i c" '(org-table-insert-column :which-key)
+  "m b i h" '(org-table-insert-hline :which-key)
+  "m b i r" '(org-table-insert-row :which-key)
+  "m b i H" '(org-table-hline-and-move :which-key)
+
+  "m b t" '(:ignore t :which-key "toggle")
+  "m b t f" '(org-table-toggle-formula-debugger :which-key)
+  "m b t o" '(org-table-toggle-coordinate-overlays :which-key)
+
+  "m z" '(:ignore t :which-key "clock")
+  "m z c" '(org-clock-cancel :which-key)
+  "m z d" '(org-clock-mark-default-task :which-key)
+  "m z e" '(org-clock-modify-effort-estimate :which-key)
+  "m z E" '(org-set-effort :which-key)
+  "m z g" '(org-clock-goto :which-key)
+  "m z i" '(org-clock-in :which-key)
+  "m z I" '(org-clock-in-last :which-key)
+  "m z o" '(org-clock-out :which-key)
+  "m z r" '(org-resolve-clocks :which-key)
+  "m z R" '(org-clock-report :which-key)
+  "m z t" '(org-evaluate-time-range :which-key)
+  "m z =" '(org-clock-timestamps-up :which-key)
+  "m z -" '(org-clock-timestamps-down :which-key)
+
+  "m d" '(:ignore t :which-key "date/deadline")
+  "m d d" '(org-deadline :which-key)
+  "m d s" '(org-schedule :which-key)
+  "m d t" '(org-time-stamp :which-key)
+  "m d T" '(org-time-stamp-inactive :which-key)
+
+  "m g" '(:ignore t :which-key "goto")
+  "m g g" '(counsel-org-goto :which-key)
+  "m g G" '(counsel-org-goto-all :which-key)
+  "m g c" '(org-clock-goto :which-key)
+  "m g i" '(org-id-goto :which-key)
+  "m g r" '(org-refile-goto-last-stored :which-key)
+  "m g x" '(org-capture-goto-last-stored :which-key)
+
+  "m l" '(:ignore t :which-key "links")
+  "m l c" '(org-cliplink :which-key)
+  "m l d" '(+org/remove-link :which-key)
+  "m l i" '(org-id-store-link :which-key)
+  "m l l" '(org-insert-link :which-key)
+  "m l L" '(org-insert-all-links :which-key)
+  "m l s" '(org-store-link :which-key)
+  "m l S" '(org-insert-last-stored-link :which-key)
+  "m l t" '(org-toggle-link-display)
+
+  "m P" '(:ignore t :which-key "publish")
+  "m P a" '(org-publish-all :which-key)
+  "m P f" '(org-publish-current-file :which-key)
+  "m P p" '(org-publish :which-key)
+  "m P P" '(org-publish-current-project :which-key)
+  "m P s" '(org-publish-sitemap :which-key)
+
+  "m r" '(org-refile :which-key "refile")
+
+  "m s" '(:ignore t :which-key "tree/subtree")
+  "m s a" '(org-toggle-archive-tag :which-key)
+  "m s b" '(org-tree-to-indirect-buffer :which-key)
+  "m s d" '(org-cut-subtree :which-key)
+  "m s h" '(org-promote-subtree :which-key)
+  "m s j" '(org-move-subtree-down :which-key)
+  "m s k" '(org-move-subtree-up :which-key)
+  "m s l" '(org-demote-subtree :which-key)
+  "m s n" '(org-narrow-to-subtree :which-key)
+  "m s r" '(org-refile :which-key)
+  "m s s" '(org-sparse-tree :which-key)
+  "m s A" '(org-archive-subtree :which-key)
+  "m s N" '(widen :which-key)
+  "m s S" '(org-sort :which-key)
+
+  "m p" '(:ignore t :which-key "priority")
+  "m p d" '(org-priority-down :which-key)
+  "m p p" '(org-priority :which-key)
+  "m p u" '(org-priority-up :which-key)
+
+)
+
+(general-def 'normal org-mode-map
+  "M j" '(org-metadown)
+  "M k" '(org-metaup)
+  "M l" '(org-metaleft)
+  "M h" '(org-metaright)
+)
+#+end_src
+

@@ -1,0 +1,186 @@
+* Reload configuration
+** Reload All
+Already done: >>Todo: add linux.org and darwing.org, use a list to expand/load multiple files.
+#+begin_src emacs-lisp
+(defun hewa-all()
+"Reload all configuration: config/keybinding/helpers.org "
+(interactive)
+(load-file (expand-file-name "init.el" user-emacs-directory))
+)
+#+end_src
+** Reload Config
+#+begin_src emacs-lisp
+(defun hewa-conf()
+"Reload configuration: config.org "
+(interactive)
+(org-babel-load-file
+ (expand-file-name "config.org" user-emacs-directory))
+)
+#+end_src
+** Reload Keybinding
+#+begin_src emacs-lisp
+(defun hewa-keys()
+"Reload keybinding: keybinding.org "
+(interactive)
+(org-babel-load-file
+ (expand-file-name "keybinding.org" user-emacs-directory))
+)
+#+end_src
+** Reload Helpers
+#+begin_src emacs-lisp
+(defun hewa-help()
+"Reload helpers: helpers.org "
+(interactive)
+(org-babel-load-file
+ (expand-file-name "helpers.org" user-emacs-directory))
+)
+#+end_src
+* Browse/Open configuration
+** init.org
+#+begin_src emacs-lisp
+(defun hewa-open-init()
+"Open init.el"
+(interactive)
+(find-file (expand-file-name "init.el" user-emacs-directory))
+)
+#+end_src
+** config.org
+#+begin_src emacs-lisp
+(defun hewa-open-conf()
+"Open config.org"
+(interactive)
+(find-file (expand-file-name "config.org" user-emacs-directory))
+)
+#+end_src
+** keybinding.org
+#+begin_src emacs-lisp
+(defun hewa-open-keys()
+"Open keybinding.org"
+(interactive)
+(find-file (expand-file-name "keybinding.org" user-emacs-directory))
+)
+#+end_src
+** helpers.org
+#+begin_src emacs-lisp
+(defun hewa-open-help()
+"Open helpers.org"
+(interactive)
+(find-file (expand-file-name "helpers.org" user-emacs-directory))
+)
+#+end_src
+
+* File related functions from Doom-Emacs
+** Copy-This-File
+#+begin_src emacs-lisp
+(defun doom/copy-this-file (new-path &optional force-p)
+  "Copy current buffer's file to NEW-PATH.
+
+If FORCE-P, overwrite the destination file if it exists, without confirmation."
+  (interactive
+   (list (read-file-name "Copy file to: ")
+         current-prefix-arg))
+  (unless (and buffer-file-name (file-exists-p buffer-file-name))
+    (user-error "Buffer is not visiting any file"))
+  (let ((old-path (buffer-file-name (buffer-base-buffer)))
+        (new-path (expand-file-name new-path)))
+    (make-directory (file-name-directory new-path) 't)
+    (copy-file old-path new-path (or force-p 1))
+    ;;TODO update file list in Dired, Magit,recentf and save-place later!
+    (message "File copied to %S" (abbreviate-file-name new-path))))
+
+#+end_src
+** Open/Find/Edit Files with SUDO
+#+begin_src emacs-lisp
+;; get file path
+(defun doom--sudo-file-path (file)
+  (let ((host (or (file-remote-p file 'host) "localhost")))
+    (concat "/" (when (file-remote-p file)
+                  (concat (file-remote-p file 'method) ":"
+                          (if-let (user (file-remote-p file 'user))
+                              (concat user "@" host)
+                            host)
+                          "|"))
+            "sudo:root@" host
+            ":" (or (file-remote-p file 'localname)
+                    file))))
+
+;; Find File via SUDO
+(defun doom/sudo-find-file (file)
+  "Open FILE as root."
+  (interactive "FOpen file as root: ")
+  (find-file (doom--sudo-file-path file)))
+
+;; Open This File as SUDO
+(defun doom/sudo-this-file ()
+  "Open the current file as root."
+  (interactive)
+  (find-file
+   (doom--sudo-file-path
+    (or buffer-file-name
+        (when (or (derived-mode-p 'dired-mode)
+                  (derived-mode-p 'wdired-mode))
+          default-directory)))))
+
+;; Save File as SUDO
+(defun doom/sudo-save-buffer ()
+  "Save this file as root."
+  (interactive)
+  (let ((file (doom--sudo-file-path buffer-file-name)))
+    (if-let (buffer (find-file-noselect file))
+        (let ((origin (current-buffer)))
+          (copy-to-buffer buffer (point-min) (point-max))
+          (unwind-protect
+              (with-current-buffer buffer
+                (save-buffer))
+            (unless (eq origin buffer)
+              (kill-buffer buffer))
+            (with-current-buffer origin
+              (revert-buffer t t))))
+      (user-error "Unable to open %S" file))))
+#+end_src
+
+* Startup Summary Function 
+#+begin_src emacs-lisp
+(defun dst/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time
+                   (time-subtract after-init-time before-init-time)))
+           gcs-done))
+
+(add-hook 'emacs-startup-hook #'dst/display-startup-time)
+
+#+end_src
+
+* Extra Functionality (Commented-out!)
+** Auto update Packages
+#+begin_example
+  (use-package auto-package-update
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results nil)
+  (auto-package-update-maybe))
+#+end_example
+
+** Testing system packages
+#+begin_example
+      (use-package rg
+    :ensure-system-package
+  (iftop . "sudo apt-get install iftop")
+  )
+#+end_example
+
+  
+
+
+
+* This is just for testing
+#+begin_src emacs-lisp
+;; ;; The package is "python" but the mode is "python-mode":
+;;(use-package python
+;;  :mode ("\\.py\\'" . python-mode)
+;;  :interpreter ("python" . python-mode))
+
+#+end_src
+TODO:
+use search-project similar to doom "SPC s p"
