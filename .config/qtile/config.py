@@ -66,8 +66,8 @@ terminal = guess_terminal()
 
 groups = [
     Group("MAX", layout='max', matches=[Match(wm_class=["chromium"])]),
-    Group("DEV", layout='matrix', matches=[Match(wm_class=["nemo"])]),
-    Group("ORG", layout='max', matches=[Match(wm_class=["etl"])]),
+    Group("DEV", layout='matrix', matches=[Match(wm_class=["pcmanfm"])]),
+    Group("ORG", layout='max', matches=[Match(wm_class=["emacs"])]),
 ]
 
 #----- Play around Groups
@@ -151,6 +151,15 @@ colorz = ("#282c34", #[0] Dark Panel BG
           "#5aff00", #[6] Green : Normal Window Border
           )
 
+layout_monad = {
+    "border_focus": colorz[5],
+    "border_normal": colorz[6],
+    "border_width": 2,
+    "margin": 2,
+    "single_border_width": 2,
+    "single_margin": 2,
+    }
+
 layout_flo = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
@@ -166,8 +175,8 @@ layout_matrix = {
     }
 
 layouts = [
-    # layout.MonadTall(**layout_monad,ratio=0.6),
-    # layout.MonadWide(**layout_monad),
+    layout.MonadTall(**layout_monad,ratio=0.6),
+    layout.MonadWide(**layout_monad),
     layout.Matrix(**layout_matrix),
     # layout.Zoomy(**layout_zoomy),
     layout.Max(),
@@ -195,7 +204,7 @@ wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
 # Default File Manager
 def open_fm():
-    qtile.cmd_spawn('nemo')
+    qtile.cmd_spawn('pcmanfm')
 
 w_sep = {
     "background": colorz[0],
@@ -306,6 +315,7 @@ floating_layout = layout.Floating(**layout_flo, float_rules=[
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
+    Match(wm_class='nm-connection-editor'),  # Network manager 
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"

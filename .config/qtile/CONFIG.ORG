@@ -6,7 +6,7 @@
 
 * Table of Content :toc:
 - [[#configuration][Configuration]]
-  - [[#add-licence][Add Licence]]
+  - [[#licence][Licence]]
   - [[#imports][Imports]]
   - [[#default-modkey][Default ModKey]]
   - [[#groups][Groups]]
@@ -19,7 +19,7 @@
   - [[#widget-themes][Widget Themes]]
   - [[#screens][Screens]]
   - [[#autostart-applications][Autostart Applications]]
-  - [[#drag-floating-layouts][Drag floating layouts.]]
+  - [[#drag-floating-layouts][Drag floating layouts]]
 
 * Configuration
 ** Licence
@@ -106,8 +106,8 @@ terminal = guess_terminal()
 #+begin_src python
 groups = [
     Group("MAX", layout='max', matches=[Match(wm_class=["chromium"])]),
-    Group("DEV", layout='matrix', matches=[Match(wm_class=["nemo"])]),
-    Group("ORG", layout='max', matches=[Match(wm_class=["etl"])]),
+    Group("DEV", layout='matrix', matches=[Match(wm_class=["pcmanfm"])]),
+    Group("ORG", layout='max', matches=[Match(wm_class=["emacs"])]),
 ]
 #+end_src
 *** Switch between Groups
@@ -234,7 +234,7 @@ colorz = ("#282c34", #[0] Dark Panel BG
 
 ** Global Layout Settings
 + Monad
-#+begin_example
+#+begin_src python
 layout_monad = {
     "border_focus": colorz[5],
     "border_normal": colorz[6],
@@ -243,7 +243,7 @@ layout_monad = {
     "single_border_width": 2,
     "single_margin": 2,
     }
-#+end_example
+#+end_src
 + Floating
 #+begin_src python
 layout_flo = {
@@ -273,8 +273,8 @@ layout_matrix = {
 ** Layouts
 #+begin_src python
 layouts = [
-    # layout.MonadTall(**layout_monad,ratio=0.6),
-    # layout.MonadWide(**layout_monad),
+    layout.MonadTall(**layout_monad,ratio=0.6),
+    layout.MonadWide(**layout_monad),
     layout.Matrix(**layout_matrix),
     # layout.Zoomy(**layout_zoomy),
     layout.Max(),
@@ -308,7 +308,7 @@ wd_icon = [os.path.expanduser("~/.config/qtile/icons")]
 
 # Default File Manager
 def open_fm():
-    qtile.cmd_spawn('nemo')
+    qtile.cmd_spawn('pcmanfm')
 #+end_src
 
 ** Widget Themes
@@ -419,7 +419,7 @@ def autostart():
     subprocess.call([home])
 #+end_src
 
-** Drag floating layouts.
+** Drag floating layouts
 #+begin_comment
 "dgroups_key_binder = None" should be commented out,
 otherwise MOD+i[N] functionality does not work
@@ -447,6 +447,7 @@ floating_layout = layout.Floating(**layout_flo, float_rules=[
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
+    Match(wm_class='nm-connection-editor'),  # Network manager 
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
