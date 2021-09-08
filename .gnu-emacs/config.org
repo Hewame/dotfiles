@@ -268,8 +268,8 @@ NOTE: load general before evil, otherwise the :general keyword in the use-packag
 #+begin_src emacs-lisp
 (use-package general
   :after whick-key
-:config
-(setq general-override-states '(normal visual insert emacs hybrid motion operator replace))
+  :config
+  (setq general-override-states '(normal visual insert emacs hybrid motion operator replace))
   ;;    (general-override-mode 1) this is default now
   )
 (general-def
@@ -296,7 +296,8 @@ Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, 
   ;; integrate with evil-collection
   (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
   (setq evil-want-keybinding nil)
-
+ 
+  (add-hook 'with-editor-mode-hook 'evil-insert-state) ;;set magit-commit in insert mode
   :config
   (setq evil-vsplit-window-right t)
   (setq evil-split-window-below t)
@@ -305,7 +306,7 @@ Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, 
 (use-package evil-collection
   :after evil
   :config
-;;  (setq evil-collection-mode-list '(dashboard dired ibuffer magit))
+  ;;  (setq evil-collection-mode-list '(dashboard dired ibuffer magit))
   (evil-collection-init))
 #+end_src
 * Magit
@@ -511,10 +512,10 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
 ;;TODO: add fold/unfold Keybinding
 (use-package elpy
   :after python-mode
-;;  :custom
-;;  (elpy-rpc-virtualenv-path "~/PythonVenv")
-;;  (pyvenv-activate "~/PythonVenv")
-;;  :init
+  :custom
+  (elpy-rpc-virtualenv-path "~/PythonVenv")
+  (pyvenv-activate "~/PythonVenv")
+;  :init
 ;;  (elpy-enable)
   :config
   ;; elpy uses built-in flymake by default!

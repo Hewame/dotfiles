@@ -7,7 +7,7 @@
 - [[#buffer-and-bookmarks][Buffer and Bookmarks]]
 - [[#reload-configuration][Reload Configuration]]
 - [[#code][Code]]
-- [[#temporary-not-organized-yet][Temporary: not organized yet]]
+- [[#insert][Insert]]
 - [[#search][Search]]
 - [[#toggle][Toggle]]
 - [[#browse-private-config][Browse private config]]
@@ -15,6 +15,7 @@
   - [[#univresal-argument-map][Univresal argument map]]
 - [[#elfeed][Elfeed]]
 - [[#org-formatmode][Org Format/Mode]]
+- [[#magit][Magit]]
 
 * SPC: Leader Key Global
 "SPC" in normal and visual states, otherwise "C-SPC" in insert and emacs states as a leader/prefix-key
@@ -29,7 +30,7 @@
   "SPC" '(counsel-M-x :which-key "M-x")
   "w"   '(:keymap evil-window-map :which-key "window") ;; Bind keys to keymap
   "h"   '(:keymap help-map :which-key "help")   ;; Bind keys to keymap
-  "g"   '(:keymap magit-mode-map :which-key "magit")   ;; Bind keys to keymap
+;;  "g"   '(:keymap magit-mode-map :which-key "magit")   ;; Bind keys to keymap
   "p"   '(:keymap projectile-command-map :which-key "projectile")   ;; Bind keys to keymap
   "'"   '(ivy-resume :which-key "Resume last search")
   ":"   '(counsel-M-x :which-key "M-x") ;;Todo change projecteil later
@@ -112,14 +113,12 @@ required functions are defined under helpers.org
   "c t"   '(org-indent-block :which-key "Org indent block")
   )
 #+end_src
-* Temporary: not organized yet
+* Insert
 #+begin_src emacs-lisp
 (hewa/my-leader-key
-  "z n"   '(org-next-block :which-key "org-next-block")
-  "z p"   '(org-previous-block :which-key "org-previous-block")
-  "z s"   '(yas-insert-snippet :which-key "Snippet")
-  "z u"   '(insert-char :which-key "Unicode")
-  "z e"   '(emojify-insert-emoji :which-key "Emoji")
+  "i s"   '(yas-insert-snippet :which-key "Snippet")
+  "i u"   '(insert-char :which-key "Unicode")
+  "i e"   '(emojify-insert-emoji :which-key "Emoji")
   )
 #+end_src
 * Search
@@ -166,7 +165,6 @@ required functions are defined under helpers.org
   )
 #+end_src
 * Elfeed
-TODO: replace general-def with hewa/my-leader...
 #+begin_src emacs-lisp
 (general-def 'normal elfeed-search-mode-map
   "l"   '(elfeed-search-show-entry :which-key "Show Entry")
@@ -213,6 +211,8 @@ TODO: replace general-def with hewa/my-leader...
   "m f" '(org-footnote-new :which-key)
   "m h" '(org-toggle-heading :which-key)
   "m i" '(org-toggle-item :which-key)
+  "m j" '(org-next-block :which-key "org-next-block")
+  "m k" '(org-previous-block :which-key "org-previous-block")
   "m I" '(org-id-get-create :which-key)
   "m n" '(org-store-link :which-key)
   "m o" '(org-set-property :which-key)
@@ -260,20 +260,20 @@ TODO: replace general-def with hewa/my-leader...
   "m b t f" '(org-table-toggle-formula-debugger :which-key)
   "m b t o" '(org-table-toggle-coordinate-overlays :which-key)
 
-  "m z" '(:ignore t :which-key "clock")
-  "m z c" '(org-clock-cancel :which-key)
-  "m z d" '(org-clock-mark-default-task :which-key)
-  "m z e" '(org-clock-modify-effort-estimate :which-key)
-  "m z E" '(org-set-effort :which-key)
-  "m z g" '(org-clock-goto :which-key)
-  "m z i" '(org-clock-in :which-key)
-  "m z I" '(org-clock-in-last :which-key)
-  "m z o" '(org-clock-out :which-key)
-  "m z r" '(org-resolve-clocks :which-key)
-  "m z R" '(org-clock-report :which-key)
-  "m z t" '(org-evaluate-time-range :which-key)
-  "m z =" '(org-clock-timestamps-up :which-key)
-  "m z -" '(org-clock-timestamps-down :which-key)
+  "m c" '(:ignore t :which-key "clock")
+  "m c c" '(org-clock-cancel :which-key)
+  "m c d" '(org-clock-mark-default-task :which-key)
+  "m c e" '(org-clock-modify-effort-estimate :which-key)
+  "m c E" '(org-set-effort :which-key)
+  "m c g" '(org-clock-goto :which-key)
+  "m c i" '(org-clock-in :which-key)
+  "m c I" '(org-clock-in-last :which-key)
+  "m c o" '(org-clock-out :which-key)
+  "m c r" '(org-resolve-clocks :which-key)
+  "m c R" '(org-clock-report :which-key)
+  "m c t" '(org-evaluate-time-range :which-key)
+  "m c =" '(org-clock-timestamps-up :which-key)
+  "m c -" '(org-clock-timestamps-down :which-key)
 
   "m d" '(:ignore t :which-key "date/deadline")
   "m d d" '(org-deadline :which-key)
@@ -327,9 +327,7 @@ TODO: replace general-def with hewa/my-leader...
   "m p d" '(org-priority-down :which-key)
   "m p p" '(org-priority :which-key)
   "m p u" '(org-priority-up :which-key)
-
 )
-
 (general-def 'normal org-mode-map
   "M j" '(org-metadown)
   "M k" '(org-metaup)
@@ -337,4 +335,47 @@ TODO: replace general-def with hewa/my-leader...
   "M h" '(org-metaright)
 )
 #+end_src
+* Magit 
+Note: use C-c prefix to send commits
+#+begin_src emacs-lisp
+(hewa/my-leader-key
+  "g"   '(:ignore t :which-key "Magit")
+  "g g"   '(magit-status :which-key "status")
+  "g R"   '(vc-revert :which-key "revert file")
+  "g ."   '(magit-file-dispatch         :which-key "Magit file dispatch")
+  "g '"   '(forge-dispatch              :which-key "Forge dispatch")
+  "g b"   '(magit-branch-checkout       :which-key "Magit switch branch")
+  "g g"   '(magit-status                :which-key "Magit status")
+  "g G"   '(magit-status-here           :which-key "Magit status here")
+  "g D"   '(magit-file-delete           :which-key "Magit file delete")
+  "g B"   '(magit-blame-addition        :which-key "Magit blame")
+  "g C"   '(magit-clone                 :which-key "Magit clone")
+  "g F"   '(magit-fetch                 :which-key "Magit fetch")
+  "g L"   '(magit-log-buffer-file       :which-key "Magit buffer log")
+  "g S"   '(magit-stage-file            :which-key "Git stage file")
+  "g U"   '(magit-unstage-file          :which-key "Git unstage file")
 
+  "g f" '(:ignore t :which-key "find")
+  "g f f"   '(magit-find-file                   :which-key "Find file")
+  "g f g"   '(magit-find-git-config-file        :which-key "Find gitconfig file")
+  "g f c"   '(magit-show-commit                 :which-key "Find commit")
+  "g f i"   '(forge-visit-issue                 :which-key "Find issue")
+  "g f p"   '(forge-visit-pullreq               :which-key "Find pull request")
+
+  "g l" '(:ignore t :which-key "list")
+  "g l r"   '(magit-list-repositories         :which-key "List repositories")
+  "g l s"   '(magit-list-submodules           :which-key "List submodules")
+  "g l i"   '(forge-list-issues               :which-key "List issues")
+  "g l p"   '(forge-list-pullreqs             :which-key "List pull requests")
+  "g l n"   '(forge-list-notifications        :which-key "List notifications")
+
+  "g c" '(:ignore t :which-key "create")
+  "g c r"   '(magit-init                       :which-key "Initialize repo")
+  "g l R"   '(magit-clone                      :which-key "Clone repo")
+  "g l c"   '(magit-commit-create              :which-key "Commit")
+  "g l f"   '(magit-commit-fixup               :which-key "Fixup")
+  "g l b"   '(magit-branch-and-checkout        :which-key "Branch")
+  "g l i"   '(forge-create-issue               :which-key "Issue")
+  "g l p"   '(forge-create-pullreq             :which-key "Pull request")
+  )
+#+end_src
