@@ -46,7 +46,6 @@
   "s"   '(:ignore t :which-key "search")
   "k"   '(:ignore t :which-key "Emacs user directory")
   "l"   '(elfeed :which-key "Elfeed")
-  "z"   '(:ignore t :which-key "Temporary: not-organized")
  )
 ;;(general-def ivy-minibuffer-map
 ;;  "TAB" 'ivy-partial
