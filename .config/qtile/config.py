@@ -121,9 +121,9 @@ keys = [
         desc="Launch Chromium Browser"),
 
     Key([mod, "shift"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
-    Key([mod], "e", lazy.spawn("emacs --with-profile default"), desc="Emacs"),
+    Key([mod], "e", lazy.spawn("emacs"), desc="Emacs"),
     Key([mod], "d", lazy.spawn("emacs --with-profile doom"), desc="Doom-Emacs"),
-    Key([mod], "t", lazy.spawn("emacs --with-profile test"), desc="Test-Emacs"),
+    Key([mod], "v", lazy.spawn("emacs --with-profile test"), desc="Vanilla-Emacs"),
 
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
