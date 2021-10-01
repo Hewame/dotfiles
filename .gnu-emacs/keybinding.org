@@ -110,6 +110,7 @@ required functions are defined under helpers.org
   "c C"   '(recompile :which-key "Recompile")
   "c w"   '(delete-trailing-whitespace :which-key "Delete trailing whitespace")
   "c t"   '(org-indent-block :which-key "Org indent block")
+  "c s"   '(sh-execute-region :which-key "shell execute region")
   )
 #+end_src
 * Insert
