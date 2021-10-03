@@ -192,7 +192,7 @@ layouts = [
 
 #----- Widget Settings
 widget_defaults = dict(
-    font='San Francisco Display',
+    font='Arimo Regular Nerd Font Complete',
     fontsize=14,
     padding=3,
     background=colorz[0], #Panel Background

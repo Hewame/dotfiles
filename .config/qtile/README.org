@@ -93,6 +93,7 @@ Keywords=wm;tiling
 #+end_src
 
 ** Autostart Applications
+install nm-applet: sudo apt install network-manager-gnome
 #+begin_src sh :tangle ~/.config/qtile/autostart.sh :shebang "#!/bin/sh"
 nitrogen --restore &
 compton &
