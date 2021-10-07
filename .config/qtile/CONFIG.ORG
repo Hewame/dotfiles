@@ -294,7 +294,7 @@ layouts = [
 #----- Widget Settings
 widget_defaults = dict(
     font='Arimo Regular Nerd Font Complete',
-    fontsize=14,
+    fontsize=13,
     padding=3,
     background=colorz[0], #Panel Background
     )

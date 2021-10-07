@@ -330,15 +330,36 @@ Magit is a complete text-based user interface to Git.
   (org-mode . visual-line-mode)
   ;; Indent content under headers, which makes for easier reading
   (org-mode . org-indent-mode) 
+  :config
+  ;; Run/highlight code using babel in org-mode
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (emacs-lisp . t)
+     (org . t)
+     (shell . t)
+     (C . t)
+     (python . t)
+     (gnuplot . t)
+     (octave . t)
+     (R . t)
+     (dot . t)
+     (awk . t)
+ ;;    (ipython . t)
+     ;; Include other languages here...
+     ))
+
   :custom
   (org-indent-indentation-per-level 2)
   (org-src-tab-acts-natively t)
   (org-edit-src-content-indentation 0)
-  (org-src-fontify-natively t)
-  (org-confirm-babel-evaluate nil)
+  (org-src-fontify-natively t) ;; Syntax highlight in #+BEGIN_SRC blocks
+  (org-confirm-babel-evaluate nil) ;; Don't prompt before running code in org
   (org-src-preserve-indentation t)
+;;  (ob-async-no-async-languages-alist '("ipython")) ;; Fix an incompatibility between the ob-async and ob-ipython packages
   ;;  (electric-indent-mode -1)
-  (org-babel-load-languages '((emacs-lisp . t) (shell . t)))
+
+
   )
 #+end_src
 
