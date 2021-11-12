@@ -576,11 +576,13 @@ Simplified access to the system clipboard in Emacs.
   :custom
   (elpy-rpc-virtualenv-path "~/PythonVenv")
   (pyvenv-activate "~/PythonVenv")
-;  :init
-;;  (elpy-enable)
+  ;;  :init
+  ;;  (elpy-enable)
   :config
   ;; elpy uses built-in flymake by default!
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)) ;; remove flymake and use flycheck!
+  ;;  (setq python-shell-interpreter "ipython"
+  ;;        python-shell-interpreter-args "-i --simple-prompt")
   )
 #+end_src
 
@@ -636,6 +638,8 @@ M-x yas-describe-tables : Display Snippets and Keys
   (setq dashboard-set-navigator nil)
   (dashboard-setup-startup-hook))
 
+;;show Dashboard in frames created with emacsclient -c
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 #+end_src
 * Elfeed 
 #+begin_src emacs-lisp
