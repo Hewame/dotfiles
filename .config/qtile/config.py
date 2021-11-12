@@ -36,7 +36,7 @@ from libqtile import qtile
 #----- Built-in Extensions: WindowList
 from libqtile.extension import WindowList
 
-import os, subprocess
+import os, subprocess, socket
 from libqtile import bar, layout, hook
 from libqtile.config import Click, Drag, Group, Key, Match, Screen, KeyChord
 from libqtile.lazy import lazy
@@ -61,13 +61,22 @@ from libqtile.widget import (
     QuickExit,
     )
 
+# DEBUG: uncomment this section
+#try:
+#    import aiomanhole
+#except ImportError:
+#    aiomanhole = None
+
+# DEBUG = os.environ.get("DEBUG")
+
 mod = "mod4"
 terminal = guess_terminal()
 
 groups = [
-    Group("MAX", layout='max', matches=[Match(wm_class=["chromium"])]),
+    Group("MAX", layout='max', matches=[Match(wm_class=["Google-chrome"])]),
     Group("DEV", layout='matrix', matches=[Match(wm_class=["pcmanfm"])]),
     Group("ORG", layout='max', matches=[Match(wm_class=["emacs"])]),
+    Group("VLC", layout='max', matches=[Match(wm_class=["vlc"])]),
 ]
 
 #----- Play around Groups
@@ -121,7 +130,7 @@ keys = [
         desc="Launch Chromium Browser"),
 
     Key([mod, "shift"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
-    Key([mod], "e", lazy.spawn("emacs"), desc="Emacs"),
+    Key([mod], "e", lazy.spawn("emacsclient -c -a emacs"), desc="Emacs"),
     Key([mod], "d", lazy.spawn("emacs --with-profile doom"), desc="Doom-Emacs"),
     Key([mod], "v", lazy.spawn("emacs --with-profile vanilla"), desc="Vanilla-Emacs"),
 
@@ -292,6 +301,14 @@ screens = [
 def autostart():
     home = os.path.expanduser('~/.config/qtile/autostart.sh')
     subprocess.call([home])
+
+# DEBUG: uncomment this section
+#if aiomanhole:
+#    @hook.subscribe.startup_complete
+#    def set_manhole():
+#        aiomanhole.start_manhole(port=7113, namespace={"qtile": qtile})
+
+#hostname = socket.gethostname()
 
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),

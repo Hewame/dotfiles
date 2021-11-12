@@ -113,6 +113,7 @@ instruction [[https://forums.virtualbox.org/viewtopic.php?t=15679][Install Linux
 * Configuration
 See [[https://github.com/Hewame/Dotfiles/blob/master/.config/qtile/CONFIG.ORG][CONFIG.ORG]]
 * Debugging
+check: https://docs.qtile.org/en/latest/manual/troubleshooting.html
 #+begin_example
 ~$ more ~/.local/share/qtile/qtile.log
 ~$ qtile start --help
