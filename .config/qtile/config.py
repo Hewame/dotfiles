@@ -31,6 +31,8 @@
 from typing import List  # noqa: F401
 
 # mouse_callbacks
+#Mouse callbacks require qtile object from libqtile,
+#see [[http://docs.qtile.org/en/latest/_modules/libqtile/widget/base.html]]
 from libqtile import qtile
 
 #----- Built-in Extensions: WindowList
@@ -59,6 +61,8 @@ from libqtile.widget import (
     Memory,
     CPU,
     QuickExit,
+    Battery,
+    BatteryIcon,
     )
 
 # DEBUG: uncomment this section
@@ -92,6 +96,7 @@ keys = [
     Key([mod], "l", lazy.layout.right(), desc="move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="move focus up"),
+    Key([mod], "s", lazy.layout.up(), desc="move focus up"),
     Key([mod], "space", lazy.layout.next(),
         desc="Move window focus to other window"),
 
@@ -130,9 +135,13 @@ keys = [
         desc="Launch Chromium Browser"),
 
     Key([mod, "shift"], "Return", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
-    Key([mod], "e", lazy.spawn("emacsclient -c -a emacs"), desc="Emacs"),
-    Key([mod], "d", lazy.spawn("emacs --with-profile doom"), desc="Doom-Emacs"),
+    Key([mod], "e", lazy.spawn("emacsclient -c -s hewa -a emacs"), desc="Emacs"),
+    Key([mod], "d", lazy.spawn("emacsclient -c -s doom -a emacs"), desc="Doom-Emacs"),
     Key([mod], "v", lazy.spawn("emacs --with-profile vanilla"), desc="Vanilla-Emacs"),
+
+    # Switch between screens
+    Key([mod], "period", lazy.next_screen(), desc="Next Monitor"),
+    Key([mod], "comma", lazy.prev_screen(), desc="Prev Monitor"),
 
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
@@ -239,7 +248,7 @@ w_prompt = {
 
 w_net = {
     "format": "{down} ↓↑ {up}",
-    "interface": "wlx7cdd90399231",
+    "interface": "wlan0",
     }
 
 w_vol = {
@@ -269,26 +278,50 @@ screens = [
                 WindowCount(),
                 Prompt(**w_prompt),
                 WindowName(foreground=colorz[1]),
-                TextBox(text="📂", fontsize="16", padding=5, mouse_callbacks={'Button1': open_fm},),
-                Systray(icon_size=20),
                 TextBox(text= "[", foreground= colorz[6], fontsize= 18,),
                 Memory(),
                 TextBox(text= "]", foreground= colorz[6], fontsize= 18,),
                 TextBox(text= "[", foreground= colorz[4], fontsize= 18,),
                 CPU(),
                 TextBox(text= "]", foreground= colorz[4], fontsize= 18,),
+
+                TextBox(text="[", foreground=colorz[3], fontsize=18,),
+                Battery(background=colorz[0],low_background=colorz[0]),
+                BatteryIcon(),
+                TextBox(text="]", foreground=colorz[3], fontsize=18,),
+
                 TextBox(text="[", foreground=colorz[2], fontsize=18,),
                 Net(**w_net,),
                 TextBox(text="]", foreground=colorz[2], fontsize=18,),
                 TextBox(text= "[", foreground= colorz[4], fontsize= 18,),
                 Volume(**w_vol),
                 TextBox(text= "]", foreground= colorz[4], fontsize= 18,),
+                TextBox(text="📂", fontsize="16", padding=5, mouse_callbacks={'Button1': open_fm},),
+                Systray(icon_size=20),
                 TextBox(text= "[", foreground= colorz[3], fontsize= 18,),
                 Clock(**w_clock),
                 TextBox(text= "]", foreground= colorz[3], fontsize= 18,),
                 TextBox(text= "[", foreground= colorz[1], fontsize= 18,),
                 KeyboardLayout(**w_key_l),
                 TextBox(text= "]", foreground= colorz[1], fontsize= 18,),
+
+            ],
+            24,
+            #opacity=0.90,
+        ),
+    ),
+# qucik: duplicate monitor
+# TODO: sepearte group for each monitor
+    Screen(
+        top=bar.Bar(
+            [
+                CurrentLayoutIcon(custom_icon_paths=wd_icon),
+                Sep(**w_sep),
+                GroupBox(**w_gbox,),
+                TextBox(text="🐸", fontsize="16", padding=5,),
+                WindowCount(),
+                Prompt(**w_prompt),
+                WindowName(foreground=colorz[1]),
 
             ],
             24,
