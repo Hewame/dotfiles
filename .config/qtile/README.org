@@ -6,10 +6,10 @@
 
 * Table of Content :toc:
 - [[#about][About]]
-- [[#installation][Installation]]
+- [[#installation-system-wide][Installation: System Wide]]
   - [[#requirements][Requirements]]
   - [[#qtile-running-on-python3][Qtile, running on Python3]]
-  - [[#add-qtile-to-system-path][Add Qtile to System PATH]]
+  - [[#upgrade][Upgrade]]
 - [[#starting-qtile][Starting Qtile]]
   - [[#via-xinitrc][via .xinitrc]]
   - [[#xsession-manager--lightdm][Xsession Manager : Lightdm]]
@@ -19,42 +19,36 @@
 - [[#debugging][Debugging]]
 
 * About
-This demo instructed on a minimal Debian 10 installation using org format.
+This demo instructed on a minimal Debian 11 installation using org format.
 you may use a graphical Xsession manager to manage Xsessions which is optional.
 
-* Installation
+* Installation: System Wide
 ** Requirements
 #+begin_example
 ~$ sudo apt install xorg python3-dbus python-gobject python3-pip git alsa-utils fonts-noto-color-emoji
 ~$ sudo apt install libxcb-render0-dev libffi-dev libcairo2 libpangocairo-1.0-0 libxcb-cursor0 python3-cffi
-~$ pip3 install xcffib
-~$ pip3 install psutil
-~$ pip3 install --no-cache-dir cairocffi
+~$ sudo pip3 install xcffib
+~$ sudo pip3 install psutil
+~$ sudo pip3 install --no-cache-dir cairocffi
 #+end_example
 
 ** Qtile, running on Python3
 With the dependencies in place, run the following commands to
 install the stable version of Qtile from PyPI
 #+begin_example
-~$ pip3 install qtile
+~$ sudo pip3 install qtile
 #+end_example
 or install the latest Qtile "DEVELOPMENT" from source.
 #+begin_example
 ~$ git clone git://github.com/qtile/qtile.git
 ~$ cd qtile
-~$ pip3 install .
+~$ sudo pip3 install .
 #+end_example
-*** Upgrade
+** Upgrade
 + Stable version
 #+begin_example
-~$ pip3 install qtile --upgrade
+~$ sudo pip3 install qtile --upgrade
 #+end_example
-** Add Qtile to System PATH
-#+begin_example
-~$ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-~$ source ~/.bashrc
-#+end_example
-
 * Starting Qtile
 ** via .xinitrc
 + Generate .xinitrc
@@ -73,32 +67,39 @@ qtile start
 ** Xsession Manager : Lightdm
 + Install lightdm
    ~$ sudo apt-get install lightdm lxpolkit
-+ Generate .Xsession
-#+begin_src sh :tangle ~/.Xsession :shebang "#!/bin/sh"
-#exec /usr/bin/lxsession -s custom -e custom &
-#exec /usr/bin/lxsession -s qtile -e qtile -noautostart &
-exec /usr/bin/lxsession -s qtile -e qtile &
-export "PATH=$HOME/.local/bin:$PATH"
-exec qtile start
-#+end_src
 + Generate qtile.desktop
- move qtile.desktop to "/usr/share/xsessions/" require root permission
+ move ~/qtile.desktop to "/usr/share/xsessions/" require root permission
 #+begin_src sh :tangle ~/qtile.desktop
 [Desktop Entry]
 Name=Qtile
 Comment=Qtile Session
-Exec=/etc/X11/Xsession
+Exec=qtile start
 Type=Application
 Keywords=wm;tiling
 #+end_src
 
 ** Autostart Applications
-install nm-applet: sudo apt install network-manager-gnome
+install nm-applet, nitrogen, compton, lxpolkit, udiskie, diodon, etc 
+#+begin_example
+~$ sudo apt install network-manager-gnome udiskie nitrogen compton diodon 
+#+end_example
 #+begin_src sh :tangle ~/.config/qtile/autostart.sh :shebang "#!/bin/sh"
+udiskie -A --notify --smart-tray &
+exec /usr/bin/lxsession -s qtile -e qtile &
 nitrogen --restore &
 compton &
+# clipit: alternative/replacement
+diodon &
 nm-applet &
 lxpolkit &
+eval $(gnome-keyring-daemon --start) &
+export SSH_AUTH_SOCK &
+emacs --daemon &
+emacs --with-profile doom --daemon &
+# disable power/screen-saver
+xset s off -dpms &
+# air-touchpad
+exec xinput set-prop 11 311 1 &
 #+end_src
 
 ** Virtualbox (Optional)
@@ -114,6 +115,7 @@ instruction [[https://forums.virtualbox.org/viewtopic.php?t=15679][Install Linux
 See [[https://github.com/Hewame/Dotfiles/blob/master/.config/qtile/CONFIG.ORG][CONFIG.ORG]]
 * Debugging
 check: https://docs.qtile.org/en/latest/manual/troubleshooting.html
+check: configuration file, uncomment debug section
 #+begin_example
 ~$ more ~/.local/share/qtile/qtile.log
 ~$ qtile start --help
